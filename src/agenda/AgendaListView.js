@@ -125,7 +125,7 @@ function ListView(element, calendar) {
 		// Start displaying our sorted list
 		var eventDisplay, headerClasses, patientId;
 		var html = $("<ul class='fc-agendaList'></ul>");
-		var mm, dd, tt, dt, lactivity, lcolor, ldescription, lparticipant, lpatient, ltitle, lurl, em;
+		var mm, dd, tt, dt, lactivity, lcolor, ldescription, lparticipant, lpatient, ltitle, lurl, linwaitingroom, em;
 		var temp, i = 0, j = 0;
 		var today = clearTime(new Date());
 
@@ -138,6 +138,7 @@ function ListView(element, calendar) {
 				lday = formatDate(displayeventlist[i].start, opt('columnFormat'));
 				ldescription = (displayeventlist[i].description != undefined) ? displayeventlist[i].description : '';
 				ltitle = displayeventlist[i].title;
+				linwaitingroom = displayeventlist[i].inWaitingRoom ? '<div class="patientInWaitingRoom" />' : '';
 				st = formatDate(displayeventlist[i].start, 'HH:mm');
 				et = formatDate(displayeventlist[i].end, 'HH:mm');
 
@@ -184,7 +185,6 @@ function ListView(element, calendar) {
 				if (allDay) {
 					eventdisplay = $(
 						'<li class="fc-agendaList-item">'
-						+ "<"
 						+ '<div class="fc-agendaList-event fc-eventlist '
 						+ classes
 						+ '">'
@@ -193,6 +193,7 @@ function ListView(element, calendar) {
 						+ '<span class="fc-event-all-day">' + opt('allDayText') + '</span>'
 						+ '</div>'
 						+ '<div class="ellipsedNoFloat fc-event-title" style="color:' + lcolor + ';" title="' + ltitle +'">' + ltitle + '</div>'
+						+ '<div class="fc-event-waitingroom">' + linwaitingroom + '</div>'
 						+ '<div class="ellipsedNoFloat fc-event-participant">' + lparticipant + '</div>'
 						+ '<div class="ellipsedNoFloat fc-event-desc grey small" title="' + ldescription + '">' + ldescription + '</div>'
 						+ '</div>').appendTo(html);
@@ -205,6 +206,7 @@ function ListView(element, calendar) {
 						+ '<div class="activityColor inline-block" style="background-color: ' + (lactivity != undefined ? lactivity.color : '') + ';" title="' + (lactivity != undefined ? lactivity.title : '') + '" />'
 						+ '<div class="fc-event-time">' + st + ' — '  + et + '</div>'
 						+ '<div class="ellipsedNoFloat fc-event-title" style="color:' + lcolor + ';" title="' + ltitle + '">' + ltitle + '</div>'
+						+ '<div class="fc-event-waitingroom">' + linwaitingroom + '</div>'
 						+ '<div class="ellipsedNoFloat fc-event-participant">' + lparticipant + '</div>'
 						+ '<div class="ellipsedNoFloat fc-event-desc grey small" title="' + ldescription + '">' + ldescription + '</div>'
 						+ '</div>').appendTo(html);
@@ -246,7 +248,7 @@ function ListView(element, calendar) {
 		var endDateB = new Date(b.end);
 		var startDateA = new Date(a.start);
 		var startDateB = new Date(b.start);
-		var result;
+		var result = 0;
 		
 		if (a.allDay && !b.allDay) {
 			result=  -1;
@@ -257,6 +259,16 @@ function ListView(element, calendar) {
 			
 			if (result === 0) {
 				result = endDateA - endDateB;
+				
+				if (result === 0) {
+					if (a.title > b.title) {
+						result = 1
+					} else if (a.title < b.title) {
+						result = -1
+					} else {
+						result = 0;
+					}
+				}
 			}
 		}
 		return result;
