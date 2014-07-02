@@ -311,15 +311,16 @@ function AgendaEventRenderer() {
 		html +=	"<div class='fc-event-time'>" +
 			htmlEscape(formatDates(event.start, event.end, opt('timeFormat'))) +
 			"</div>";
-		
-		if (event.inWaitingRoom) {
-			html += "<div class='patientInWaitingRoom'></div>";
-		}		
-		
+
 		if (event.havePatient) {
-			html += "<div class='patientInAppointment'></div>";
-		}		
-			
+			if (event.inWaitingRoom) {
+					html += "<div class='patientInWaitingRoom'></div>";
+				} else {
+					html += "<div class='patientInAppointment'></div>";
+				}
+			}
+		}
+
 		html +=
 			"<div class='fc-event-title'>" +
 			htmlEscape(event.title) +
